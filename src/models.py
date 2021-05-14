@@ -1,6 +1,6 @@
 import torch
 from torch import nn
-from torchvision.transforms.functional import pad
+import sys
 
 
 class UNetContractingBlock(nn.Module):
@@ -193,4 +193,79 @@ class Discriminator(nn.Module):
 
         return out
 
+
+
+class Pix2Pix():
+    """
+    Just a wrapper for the Pix2Pix model, does not act as an instance of nn.Module
+    ==>> Don't backprop through it!!! Use the trainer class/script instead
+    """
+    
+    def __init__(self, params):
+
+        try:
+            self.G_in_channels = params['G_in_channels']
+            self.G_hidden_channels = params['G_hidden_channels']
+            self.G_out_channels = params['G_out_channels']
+            self.G_depth = params['G_depth']
+            self.D_in_channels = params['D_in_channels']
+            self.D_hidden_channels = params['D_hidden_channels']
+            self.D_depth = params['D_depth']
+
+        except KeyError as err:
+            print("You are missing some input parameters!")
+            print("Error message: ", err.msg)
+            sys.exit(1)
+
+
+        self.G = Generator(self.G_in_channels, self.G_out_channels, self.G_hidden_channels, self.G_depth)
+
+        self.D = Discriminator(self.D_in_channels, self.D_hidden_channels, self.D_depth)
+
+
+    def set_mode(self, G_mode=None, D_mode=None):
+
+        if G_mode is not None:
+            if G_mode == 'train':
+                self.G.train()
+            elif G_mode == 'eval':
+                self.G.eval()
+
+        if D_mode is not None:
+            if D_mode == 'train':
+                self.D.train()
+            elif D_mode == 'eval':
+                self.D.eval()
+    
+
+    def set_requires_grad(self, nets, requires_grad=False):
+        """Set requies_grad=Fasle for all the networks to avoid unnecessary computations
+        Parameters:
+            nets (network list)   -- a list of networks
+            requires_grad (bool)  -- whether the networks require gradients or not
+        """
+        if not isinstance(nets, list):
+            nets = [nets]
+        for net in nets:
+            if net is not None:
+                for param in net.parameters():
+                    param.requires_grad = requires_grad
+
+                    
+
+    """
+    ADD A METHOD FOR G AND D PARALLELIZATION
+
+    """
+
+
+    """
+    !!! MAYBE USELESS !!!
+
+    def forward(self, x):
+
+        out = self.G(x)
+
+        return out
+    """
 
