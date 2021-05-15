@@ -13,21 +13,21 @@ from PIL import Image
 # ========================================================================================
 
 
-class CarlaPix2PixDataset(Dataset):
+class Pix2PixDataset(Dataset):
 
-    def __init__(self, root_folder, rgb_folder, semseg_folder, transform=None):
-        super(CarlaPix2PixDataset, self).__init__()
+    def __init__(self, root_folder, in_folder, out_folder, transform=None):
+        super(Pix2PixDataset, self).__init__()
 
         self.root_folder = os.path.abspath(root_folder)
-        self.rgb_folder = os.path.join(root_folder, rgb_folder)
-        self.semseg_folder = os.path.join(root_folder, semseg_folder)
+        self.in_folder = os.path.join(root_folder, in_folder)
+        self.out_folder = os.path.join(root_folder, out_folder)
 
-        self.rgb_img_names = os.listdir(self.rgb_folder)
-        self.rgb_img_names.sort()
+        self.in_img_names = os.listdir(self.in_folder)
+        self.in_img_names.sort()
 
         self.transform = transform
 
-        self.len = len(self.rgb_img_names)
+        self.len = len(self.in_img_names)
     
 
     def __len__(self):
@@ -37,20 +37,20 @@ class CarlaPix2PixDataset(Dataset):
 
     def __getitem__(self, idx):
         
-        img_name = self.rgb_img_names[idx]
-        rgb_img_path = os.path.join(self.rgb_folder, img_name)
-        semseg_img_path = os.path.join(self.semseg_folder, img_name)
+        img_name = self.in_img_names[idx]
+        in_img_path = os.path.join(self.in_folder, img_name)
+        out_img_path = os.path.join(self.out_folder, img_name)
 
-        rgb_img = Image.open(rgb_img_path).convert('RGB')   
-        semseg_img = Image.open(semseg_img_path).convert('RGB')
+        in_img = Image.open(in_img_path).convert('RGB')   
+        out_img = Image.open(out_img_path).convert('RGB')
 
         if self.transform is None:
             self.transform = transforms.ToTensor()
 
-        rgb_img = self.transform(rgb_img)
-        semseg_img = self.transform(semseg_img)
+        in_img = self.transform(in_img)
+        out_img = self.transform(out_img)
 
-        return {'rgb': rgb_img, 'semseg': semseg_img}
+        return {'in': in_img, 'out': out_img}
 
 
 
@@ -83,7 +83,7 @@ def load_datasets_UNet(
 
 
 def load_dataset_Pix2Pix(
-    train_filepath, val_filepath, crop_size, new_size, batch_size, rgb_folder, semseg_folder,
+    train_filepath, val_filepath, crop_size, new_size, batch_size, in_folder, out_folder,
     num_workers=0, shuffle_train=True, shuffle_val=False
     ):
 
@@ -93,12 +93,12 @@ def load_dataset_Pix2Pix(
         transforms.ToTensor()
     ])
 
-    train_dataset = CarlaPix2PixDataset(
-        root_folder=train_filepath, rgb_folder=rgb_folder, semseg_folder=semseg_folder, transform=transform
+    train_dataset = Pix2PixDataset(
+        root_folder=train_filepath, in_folder=in_folder, out_folder=out_folder, transform=transform
         ) if train_filepath is not None else []
     
-    val_dataset = CarlaPix2PixDataset(
-        root_folder=val_filepath, rgb_folder=rgb_folder, semseg_folder=semseg_folder, transform=transform
+    val_dataset = Pix2PixDataset(
+        root_folder=val_filepath, in_folder=in_folder, out_folder=out_folder, transform=transform
         ) if val_filepath is not None else []
 
     # Create DataLoader objects for both the training and validation sets:  

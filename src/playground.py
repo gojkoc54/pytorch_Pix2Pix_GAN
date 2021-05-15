@@ -13,11 +13,11 @@ root_folder = "/home/gojkoc54/GOJKO/Faks/KV/data/pix2pix"
 crop_size = (256, 256)
 new_size = (256, 256)
 batch_size = 1
-rgb_folder = "rgb_images"
-semseg_folder = "sem_seg_images"
+in_folder  = "sem_seg_images"
+out_folder = "rgb_images"
 
 loader, _ = load_dataset_Pix2Pix(
-    root_folder, None, crop_size, new_size, batch_size, rgb_folder, semseg_folder
+    root_folder, None, crop_size, new_size, batch_size, in_folder, out_folder
     )
 
 P2P_params = {}

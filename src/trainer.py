@@ -106,7 +106,7 @@ class Pix2PixTrainer(Trainer):
             for data in train_loader:
                 
                 real_in, real_out = \
-                    data['semseg'].to(self.device), data['rgb'].to(self.device)
+                    data['in'].to(self.device), data['out'].to(self.device)
 
                 # -- Generator forward --
                 fake_out = self.model.G(real_in)
