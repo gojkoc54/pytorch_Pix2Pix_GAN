@@ -198,7 +198,7 @@ class Discriminator(nn.Module):
 class Pix2Pix():
     """
     Just a wrapper for the Pix2Pix model, does not act as an instance of nn.Module
-    ==>> Don't backprop through it!!! Use the trainer class/script instead
+    ==>> Don't try to backprop through it!!! Use the trainer class/script instead
     """
     
     def __init__(self, params):
@@ -221,6 +221,23 @@ class Pix2Pix():
         self.G = Generator(self.G_in_channels, self.G_out_channels, self.G_hidden_channels, self.G_depth)
 
         self.D = Discriminator(self.D_in_channels, self.D_hidden_channels, self.D_depth)
+
+
+    def forward(self, x):
+
+        out = self.G(x)
+        return out
+
+
+    def to(self, devices):
+        
+        D_device = devices['D']
+        G_device = devices['G']
+
+        self.D.to(D_device)
+        self.G.to(G_device)
+
+        return self
 
 
     def set_mode(self, G_mode=None, D_mode=None):
@@ -251,7 +268,7 @@ class Pix2Pix():
                 for param in net.parameters():
                     param.requires_grad = requires_grad
 
-                    
+
 
     """
     ADD A METHOD FOR G AND D PARALLELIZATION
@@ -259,13 +276,5 @@ class Pix2Pix():
     """
 
 
-    """
-    !!! MAYBE USELESS !!!
-
-    def forward(self, x):
-
-        out = self.G(x)
-
-        return out
-    """
+    
 
