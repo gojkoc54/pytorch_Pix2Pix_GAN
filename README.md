@@ -1,2 +1,2 @@
 # pytorch_Pix2Pix_GAN
-Computer Vision Course Project
+Computer Vision Course Project - IN PROGRESS
