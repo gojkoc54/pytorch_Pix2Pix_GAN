@@ -101,8 +101,6 @@ class Pix2PixTrainer(Trainer):
             
             self.model.set_mode(G_mode='train', D_mode='train')
 
-            i = 0
-
             for data in train_loader:
                 
                 real_in, real_out = \
